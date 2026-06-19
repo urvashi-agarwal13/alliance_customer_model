@@ -84,12 +84,14 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('hub_customer')
-              field: customer_hkey
+              arguments:
+                to: ref('hub_customer')
+                field: customer_hkey
       - name: product_hkey
         description: "Product hub key in the link."
         tests:
           - not_null
           - relationships:
-              to: ref('hub_product')
-              field: product_hkey
+              arguments:
+                to: ref('hub_product')
+                field: product_hkey

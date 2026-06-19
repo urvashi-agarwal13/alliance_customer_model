@@ -1,11 +1,10 @@
-name: alliance_customer_model
+name: 'alliance_customer_model'
 version: '1.0'
 config-version: 2
 profile: alliance_customer_model
-source-paths: ["models"]
+model-paths: ["models"]
 analysis-paths: ["analysis"]
 test-paths: ["tests"]
-data-paths: ["data"]
 macro-paths: ["macros"]
 seed-paths: ["seeds"]
 target-path: "target"
