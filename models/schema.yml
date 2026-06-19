@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: raw_customers
+    description: "Staging model for raw customer source data."
+    columns:
+      - name: customer_id
+        description: "Natural customer business key."
+        tests: [not_null, unique]
+      - name: customer_name
+        description: "Customer display name."
+        tests: [not_null]
+
+  - name: raw_products
+    description: "Staging model for raw product source data."
+    columns:
+      - name: product_id
+        description: "Natural product business key."
+        tests: [not_null, unique]
+      - name: product_name
+        description: "Product display name."
+        tests: [not_null]
+
+  - name: raw_customer_products
+    description: "Staging model for raw customer-product relationship data."
+    columns:
+      - name: customer_id
+        description: "Customer business key used to build the link."
+        tests: [not_null]
+      - name: product_id
+        description: "Product business key used to build the link."
+        tests: [not_null]
+
+  - name: hub_customer
+    description: "Customer Hub storing customer business keys."
+    columns:
+      - name: customer_hkey
+        description: "Hashed customer business key."
+        tests: [not_null, unique]
+      - name: customer_nk
+        description: "Natural customer key used for lookups."
+        tests: [not_null, unique]
+
+  - name: hub_product
+    description: "Product Hub storing product business keys."
+    columns:
+      - name: product_hkey
+        description: "Hashed product business key."
+        tests: [not_null, unique]
+      - name: product_nk
+        description: "Natural product key used for lookups."
+        tests: [not_null, unique]
+
+  - name: sat_customer
+    description: "Customer Satellite storing descriptive customer attributes."
+    columns:
+      - name: customer_hkey
+        description: "Foreign key to the customer hub."
+        tests: [not_null]
+      - name: customer_name
+        description: "Customer display name."
+        tests: [not_null]
+
+  - name: sat_product
+    description: "Product Satellite storing descriptive product attributes."
+    columns:
+      - name: product_hkey
+        description: "Foreign key to the product hub."
+        tests: [not_null]
+      - name: product_name
+        description: "Product display name."
+        tests: [not_null]
+
+  - name: link_customer_product
+    description: "Link table connecting customer and product hubs."
+    tests:
+      - link_customer_product_integrity
+    columns:
+      - name: customer_product_lkey
+        description: "Hashed link key for the customer-product relationship."
+        tests: [not_null, unique]
+      - name: customer_hkey
+        description: "Customer hub key in the link."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hkey
+      - name: product_hkey
+        description: "Product hub key in the link."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_product')
+              field: product_hkey
