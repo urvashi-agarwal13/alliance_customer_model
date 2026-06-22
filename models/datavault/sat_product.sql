@@ -5,7 +5,11 @@ with new_rows as (
     hp.product_hk,
     s.product_name,
     s.product_price,
-    cast(hashbytes('SHA2_256', coalesce(s.product_name,'') + '|' + coalesce(cast(s.product_price as varchar(50)),'')) as varbinary(32)) as hashdiff,
+        sha2_binary(
+    coalesce(s.product_name, '')
+    || '|'
+    || coalesce(s.product_price, '')
+  ,256)  as hashdiff,
     s.load_dt as eff_start_dt,
     null as eff_end_dt,
     s.load_dt,

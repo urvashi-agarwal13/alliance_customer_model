@@ -1,7 +1,7 @@
 {{ config(materialized='incremental', unique_key='customer_product_hk') }}
 
 select distinct
-  s. customer_id as customer_product_hk,
+  s.customer_product_hk,
   hc.customer_hk,
   hp.product_hk,
   s.load_dt,

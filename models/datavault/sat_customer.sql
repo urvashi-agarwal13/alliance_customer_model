@@ -5,7 +5,11 @@ with new_rows as (
     hc.customer_hk,
     s.customer_name,
     s.customer_address,
-    cast(hashbytes('SHA2_256', coalesce(s.customer_name,'') + '|' + coalesce(s.customer_address,'')) as varbinary(32)) as hashdiff,
+    sha2_binary(
+    coalesce(s.customer_name, '')
+    || '|'
+    || coalesce(s.customer_address, '')
+  ,256) as hashdiff,
     s.load_dt as eff_start_dt,
     null as eff_end_dt,
     s.load_dt,
