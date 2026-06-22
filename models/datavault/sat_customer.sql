@@ -1,10 +1,28 @@
-{{ config(materialized='table') }}
+{{ config(materialized='incremental', unique_key='customer_hk') }}
 
-select
-  customer_name,
-  'raw_customers' as record_source,
-  current_timestamp as load_date,
-  md5(customer_id::text) as customer_hkey,
-  md5(concat(customer_id::text, customer_name)) as customer_hashdiff
-  from {{ ref('raw_customers') }}
-where customer_id is not null
+with new_rows as (
+  select
+    hc.customer_hk,
+    s.customer_name,
+    s.customer_address,
+    cast(hashbytes('SHA2_256', coalesce(s.customer_name,'') + '|' + coalesce(s.customer_address,'')) as varbinary(32)) as hashdiff,
+    s.load_dt as eff_start_dt,
+    null as eff_end_dt,
+    s.load_dt,
+    s.record_source
+  from {{ ref('stg_customer') }} s
+  join {{ ref('hub_customer') }} hc on hc.customer_id = s.customer_id
+)
+
+select *
+from new_rows
+
+{% if is_incremental() %}
+where not exists (
+  select 1
+  from {{ this }} sat
+  where sat.customer_hk = new_rows.customer_hk
+    and sat.hashdiff = new_rows.hashdiff
+    and sat.eff_end_dt is null
+)
+{% endif %}

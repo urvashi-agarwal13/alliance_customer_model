@@ -1,13 +1,20 @@
-{{ config(materialized='table') }}
+{{ config(materialized='incremental', unique_key='customer_product_hk') }}
 
-select
-  customer_id,
-  product_id,
-  'raw_customer_products' as record_source,
-  current_timestamp as load_date,
-  md5(customer_id::text || product_id::text) as customer_product_lkey,
-  md5(customer_id::text) as customer_hkey,
-  md5(product_id::text) as product_hkey
-  from {{ ref('raw_customer_products') }}
-where customer_id is not null
-  and product_id is not null
+select distinct
+  s. customer_id as customer_product_hk,
+  hc.customer_hk,
+  hp.product_hk,
+  s.load_dt,
+  s.record_source
+from {{ ref('stg_customer_product') }} s
+join {{ ref('hub_customer') }} hc on hc.customer_id = s.customer_id
+join {{ ref('hub_product') }} hp on hp.product_id = s.product_id
+
+{% if is_incremental() %}
+where not exists (
+  select 1
+  from {{ this }} l
+  where l.customer_hk = hc.customer_hk
+    and l.product_hk = hp.product_hk
+)
+{% endif %}

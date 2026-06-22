@@ -1,9 +1,12 @@
-{{ config(materialized='table') }}
+{{ config(materialized='incremental', unique_key='product_hk') }}
 
 select distinct
-  product_id as product_nk,
-  'raw_products' as record_source,
-   current_timestamp as load_date,
-  md5(product_id::text) as product_hkey
- from {{ ref('raw_products') }}
-where product_id is not null
+  md_product_hk as product_hk,
+  product_id,
+  load_dt,
+  record_source
+from {{ ref('stg_product') }}
+
+{% if is_incremental() %}
+where product_id not in (select product_id from {{ this }})
+{% endif %}

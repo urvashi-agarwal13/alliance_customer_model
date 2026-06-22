@@ -1,9 +1,12 @@
-{{ config(materialized='table') }}
+{{ config(materialized='incremental', unique_key='customer_hk') }}
 
 select distinct
-  customer_id as customer_nk,
-  'raw_customers' as record_source,
-   current_timestamp as load_date,
-   md5(customer_id::text) as customer_hkey
-   from {{ ref('raw_customers') }}
-where customer_id is not null
+  md_customer_hk as customer_hk,
+  customer_id,
+  load_dt,
+  record_source
+from {{ ref('stg_customer') }}
+
+{% if is_incremental() %}
+where customer_id not in (select customer_id from {{ this }})
+{% endif %}
