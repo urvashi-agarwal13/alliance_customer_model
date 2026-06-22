@@ -4,7 +4,7 @@ select
   product_id,
   product_name,
   product_price,
-  cast(hashbytes('SHA2_256', cast(product_id as varchar(200))) as varbinary(32)) as md_product_hk,
-  load_dt,
-  record_source
-from {{ source('raw', 'raw_product') }}
+  md5(upper(trim(product_id))) as md_product_hk,
+  current_date() as load_dt,
+  'product' as record_source
+from {{ source('SALES', 'raw_product') }}

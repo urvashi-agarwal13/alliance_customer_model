@@ -4,7 +4,7 @@ select
   customer_id,
   customer_name,
   customer_address,
-  cast(hashbytes('SHA2_256', cast(customer_id as varchar(200))) as varbinary(32)) as md_customer_hk,
-  load_dt,
-  record_source
-from {{ source('raw', 'raw_customer') }}
+  md5(upper(trim(customer_id))) as md_customer_hk,
+  current_date() as load_dt,
+  'customer' as record_source
+from {{ source('SALES', 'raw_customer') }}
