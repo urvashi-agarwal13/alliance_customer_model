@@ -13,7 +13,7 @@ clean-targets: ["target", "dbt_modules"]
 models:
   alliance_customer_model:
     +database: DEV
-    +schema: SALES
+    +schema: 
     staging:
       +materialized: view
     datavault:
