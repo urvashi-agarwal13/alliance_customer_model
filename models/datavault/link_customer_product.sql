@@ -6,7 +6,7 @@ select distinct
   hp.product_hk,
   s.load_dt,
   s.record_source
-from {{ ref('stg_customer_product') }} s
+from {{ ref('customer_product') }} s
 join {{ ref('hub_customer') }} hc on hc.customer_id = s.customer_id
 join {{ ref('hub_product') }} hp on hp.product_id = s.product_id
 

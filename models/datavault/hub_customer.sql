@@ -5,7 +5,7 @@ select distinct
   customer_id,
   load_dt,
   record_source
-from {{ ref('stg_customer') }}
+from {{ ref('customer') }}
 
 {% if is_incremental() %}
 where customer_id not in (select customer_id from {{ this }})

@@ -5,7 +5,7 @@ select distinct
   product_id,
   load_dt,
   record_source
-from {{ ref('stg_product') }}
+from {{ ref('product') }}
 
 {% if is_incremental() %}
 where product_id not in (select product_id from {{ this }})

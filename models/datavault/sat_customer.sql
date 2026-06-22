@@ -10,7 +10,7 @@ with new_rows as (
     null as eff_end_dt,
     s.load_dt,
     s.record_source
-  from {{ ref('stg_customer') }} s
+  from {{ ref('customer') }} s
   join {{ ref('hub_customer') }} hc on hc.customer_id = s.customer_id
 )
 

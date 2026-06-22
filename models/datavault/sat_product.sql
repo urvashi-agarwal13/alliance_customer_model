@@ -10,7 +10,7 @@ with new_rows as (
     null as eff_end_dt,
     s.load_dt,
     s.record_source
-  from {{ ref('stg_product') }} s
+  from {{ ref('product') }} s
   join {{ ref('hub_product') }} hp on hp.product_id = s.product_id
 )
 
