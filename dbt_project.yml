@@ -18,3 +18,12 @@ models:
       +materialized: view
     datavault:
       +materialized: table
+
+seeds:
+  alliance_customer_model:
+    customers:
+      +alias: raw_customer
+    products:
+      +alias: raw_product
+    customer_products:
+      +alias: raw_customer_product
